@@ -1,44 +1,44 @@
 # Port Scanner
 
-## Eesmärk
-TCP port scanner mis kontrollib antud IP aadressi pordivahemikku ja kuvab millised pordid on avatud. Ehitasin selle et õppida kuidas võrguühendused ja socket'id töötavad.
+## Purpose
+TCP port scanner that checks a given IP address across a port range and displays which ports are open. Built to learn how network connections and sockets work.
 
-## Tööriistad
+## Tools
 - Python 3
-- `socket` — TCP ühenduste loomiseks
+- `socket` — for creating TCP connections
 
-## Kasutus
+## Usage
 ```bash
 python3 port_scanner.py 192.168.1.1 1 1024
 ```
 
-## Mida õppisin
-- Kuidas TCP kolmekäeline handshake töötab (SYN → SYN-ACK → ACK)
-- Miks suletud port annab `Connection refused` ja ei vaiki lihtsalt
-- Socket timeout tähtsus — ilma selleta jääb skript kinni filtreeritud portidel
-- Erinevus TCP ja UDP vahel skannimisel
+## What I learned
+- How the TCP three-way handshake works (SYN → SYN-ACK → ACK)
+- Why a closed port returns `Connection refused` instead of just staying silent
+- The importance of socket timeouts — without one, the script hangs on filtered ports
+- The difference between TCP and UDP scanning
 
-## Probleemid ja lahendused
-**Probleem:** Skannimine oli algselt liiga aeglane
-**Lahendus:** Lisasin `socket.settimeout()` — vähendas ooteaja 30s → 1s pordi kohta
+## Problems & Solutions
+**Problem:** Scanning was too slow initially  
+**Solution:** Added `socket.settimeout()` — reduced wait time from 30s → 1s per port
 
-**Probleem:** Kood viskas koguaeg errori üless, siis avastasin, et connect() on see süüdlane
-**Lahendus:** Asendasin connect() -> connect_ex() ja see lahendas probleemi
+**Problem:** Code kept throwing an exception on closed ports  
+**Solution:** Replaced `connect()` with `connect_ex()` — returns an error code instead of raising an exception, so the script continues cleanly
 
-## Kood
+## Code
 ```python
 import socket
 
-ip = input("Sisesta IP: ")
+ip = input("Enter IP: ")
 for port in range(1, 1025):
     s = socket.socket()
     s.settimeout(0.5)
-    tulemus = s.connect_ex((ip, port))
-    if tulemus == 0:
-        print(f"Port: {port} - LAHTI")
+    result = s.connect_ex((ip, port))
+    if result == 0:
+        print(f"Port: {port} - OPEN")
     s.close()
+
 ```
 
-
 ---
-*Valminud: 2025 · Kuupäev*
+*Completed: 15.05.2026*
